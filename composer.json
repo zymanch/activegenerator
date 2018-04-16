@@ -1,0 +1,19 @@
+{
+    "name": "gtflixtv/active-generator",
+    "description": "Yii 2 active generator",
+    "type": "project",
+    "minimum-stability": "dev",
+    "version":"1.0.0",
+    "require": {
+
+    },
+    "autoload": {
+        "psr-4": {
+            "ActiveRecord\\generator\\": "generator",
+            "ActiveRecord\\base\\": "base",
+            "ActiveRecord\\db\\": "db",
+            "ActiveRecord\\helpers\\": "helpers",
+            "ActiveRecord\\gii\\": "gii"
+        }
+    }
+}

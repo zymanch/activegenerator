@@ -1,0 +1,5 @@
+# Created by .ignore support plugin (hsz.mobi)
+config.local.php
+config.secure.json
+/vendor/
+/.idea/
