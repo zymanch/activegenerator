@@ -14,204 +14,22 @@ use ReflectionClass;
 use IteratorAggregate;
 use ActiveGenerator\helpers\Inflector;
 
-/**
- * Model is the base class for data models.
- *
- * Model implements the following commonly used features:
- *
- * - attribute declaration: by default, every public class member is considered as
- *   a model attribute
- * - attribute labels: each attribute may be associated with a label for display purpose
- * - massive attribute assignment
- * - scenario-based validation
- *
- * Model also raises the following events when performing data validation:
- *
- * - [[EVENT_BEFORE_VALIDATE]]: an event raised at the beginning of [[validate()]]
- * - [[EVENT_AFTER_VALIDATE]]: an event raised at the end of [[validate()]]
- *
- * You may directly use Model to store model data, or extend it with customization.
- *
- * For more details and usage information on Model, see the [guide article on models](guide:structure-models).
- *
- * [[scenario]]. This property is read-only.
- * @property array $attributes Attribute values (name => value).
- * @property array $errors An array of errors for all attributes. Empty array is returned if no error. The
- * result is a two-dimensional array. See [[getErrors()]] for detailed description. This property is read-only.
- * @property array $firstErrors The first errors. The array keys are the attribute names, and the array values
- * are the corresponding error messages. An empty array will be returned if there is no error. This property is
- * read-only.
- * @property ArrayIterator $iterator An iterator for traversing the items in the list. This property is
- * read-only.
- * @property string $scenario The scenario that this model is in. Defaults to [[SCENARIO_DEFAULT]].
- * This property is read-only.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
- */
 class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayable
 {
     use ArrayableTrait;
 
-    /**
-     * The name of the default scenario.
-     */
-    const SCENARIO_DEFAULT = 'default';
+
 
 
     /**
      * @var array validation errors (attribute name => array of errors)
      */
     private $_errors;
-    /**
-     * @var ArrayObject list of validators
-     */
-    private $_validators;
-    /**
-     * @var string current scenario
-     */
-    private $_scenario = self::SCENARIO_DEFAULT;
 
 
-    /**
-     * Returns the validation rules for attributes.
-     *
-     * Validation rules are used by [[validate()]] to check if attribute values are valid.
-     * Child classes may override this method to declare different validation rules.
-     *
-     * Each rule is an array with the following structure:
-     *
-     * ```php
-     * [
-     *     ['attribute1', 'attribute2'],
-     *     'validator type',
-     *     'on' => ['scenario1', 'scenario2'],
-     *     //...other parameters...
-     * ]
-     * ```
-     *
-     * where
-     *
-     *  - attribute list: required, specifies the attributes array to be validated, for single attribute you can pass a string;
-     *  - validator type: required, specifies the validator to be used. It can be a built-in validator name,
-     *    a method name of the model class, an anonymous function, or a validator class name.
-     *  - on: optional, specifies the [[scenario|scenarios]] array in which the validation
-     *    rule can be applied. If this option is not set, the rule will apply to all scenarios.
-     *  - additional name-value pairs can be specified to initialize the corresponding validator properties.
-     *    Please refer to individual validator class API for possible properties.
-     *
-     * A validator can be either an object of a class extending [[Validator]], or a model class method
-     * (called *inline validator*) that has the following signature:
-     *
-     * ```php
-     * // $params refers to validation parameters given in the rule
-     * function validatorName($attribute, $params)
-     * ```
-     *
-     * In the above `$attribute` refers to the attribute currently being validated while `$params` contains an array of
-     * validator configuration options such as `max` in case of `string` validator. The value of the attribute currently being validated
-     * can be accessed as `$this->$attribute`. Note the `$` before `attribute`; this is taking the value of the variable
-     * `$attribute` and using it as the name of the property to access.
-     *
-     * Yii also provides a set of [[Validator::builtInValidators|built-in validators]].
-     * Each one has an alias name which can be used when specifying a validation rule.
-     *
-     * Below are some examples:
-     *
-     * ```php
-     * [
-     *     // built-in "required" validator
-     *     [['username', 'password'], 'required'],
-     *     // built-in "string" validator customized with "min" and "max" properties
-     *     ['username', 'string', 'min' => 3, 'max' => 12],
-     *     // built-in "compare" validator that is used in "register" scenario only
-     *     ['password', 'compare', 'compareAttribute' => 'password2', 'on' => 'register'],
-     *     // an inline validator defined via the "authenticate()" method in the model class
-     *     ['password', 'authenticate', 'on' => 'login'],
-     *     // a validator of class "DateRangeValidator"
-     *     ['dateRange', 'DateRangeValidator'],
-     * ];
-     * ```
-     *
-     * Note, in order to inherit rules defined in the parent class, a child class needs to
-     * merge the parent rules with child rules using functions such as `array_merge()`.
-     *
-     * @return array validation rules
-     * @see scenarios()
-     */
     public function rules()
     {
         return [];
-    }
-
-    /**
-     * Returns a list of scenarios and the corresponding active attributes.
-     * An active attribute is one that is subject to validation in the current scenario.
-     * The returned array should be in the following format:
-     *
-     * ```php
-     * [
-     *     'scenario1' => ['attribute11', 'attribute12', ...],
-     *     'scenario2' => ['attribute21', 'attribute22', ...],
-     *     ...
-     * ]
-     * ```
-     *
-     * By default, an active attribute is considered safe and can be massively assigned.
-     * If an attribute should NOT be massively assigned (thus considered unsafe),
-     * please prefix the attribute with an exclamation character (e.g. `'!rank'`).
-     *
-     * The default implementation of this method will return all scenarios found in the [[rules()]]
-     * declaration. A special scenario named [[SCENARIO_DEFAULT]] will contain all attributes
-     * found in the [[rules()]]. Each scenario will be associated with the attributes that
-     * are being validated by the validation rules that apply to the scenario.
-     *
-     * @return array a list of scenarios and the corresponding active attributes.
-     */
-    public function scenarios()
-    {
-        $scenarios = [self::SCENARIO_DEFAULT => []];
-        foreach ($this->getValidators() as $validator) {
-            foreach ($validator->on as $scenario) {
-                $scenarios[$scenario] = [];
-            }
-            foreach ($validator->except as $scenario) {
-                $scenarios[$scenario] = [];
-            }
-        }
-        $names = array_keys($scenarios);
-
-        foreach ($this->getValidators() as $validator) {
-            if (empty($validator->on) && empty($validator->except)) {
-                foreach ($names as $name) {
-                    foreach ($validator->attributes as $attribute) {
-                        $scenarios[$name][$attribute] = true;
-                    }
-                }
-            } elseif (empty($validator->on)) {
-                foreach ($names as $name) {
-                    if (!in_array($name, $validator->except, true)) {
-                        foreach ($validator->attributes as $attribute) {
-                            $scenarios[$name][$attribute] = true;
-                        }
-                    }
-                }
-            } else {
-                foreach ($validator->on as $name) {
-                    foreach ($validator->attributes as $attribute) {
-                        $scenarios[$name][$attribute] = true;
-                    }
-                }
-            }
-        }
-
-        foreach ($scenarios as $scenario => $attributes) {
-            if (!empty($attributes)) {
-                $scenarios[$scenario] = array_keys($attributes);
-            }
-        }
-
-        return $scenarios;
     }
 
     /**
@@ -298,29 +116,6 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         return [];
     }
 
-    /**
-     * Performs the data validation.
-     *
-     * This method executes the validation rules applicable to the current [[scenario]].
-     * The following criteria are used to determine whether a rule is currently applicable:
-     *
-     * - the rule must be associated with the attributes relevant to the current scenario;
-     * - the rules must be effective for the current scenario.
-     *
-     * This method will call [[beforeValidate()]] and [[afterValidate()]] before and
-     * after the actual validation, respectively. If [[beforeValidate()]] returns false,
-     * the validation will be cancelled and [[afterValidate()]] will not be called.
-     *
-     * Errors found during the validation can be retrieved via [[getErrors()]],
-     * [[getFirstErrors()]] and [[getFirstError()]].
-     *
-     * @param array $attributeNames list of attribute names that should be validated.
-     * If this parameter is empty, it means any attribute listed in the applicable
-     * validation rules should be validated.
-     * @param bool $clearErrors whether to call [[clearErrors()]] before performing validation
-     * @return bool whether the validation is successful without any error.
-     * @throws \Exception if the current scenario is unknown.
-     */
     public function validate($attributeNames = null, $clearErrors = true)
     {
         if ($clearErrors) {
@@ -331,19 +126,10 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
             return false;
         }
 
-        $scenarios = $this->scenarios();
-        $scenario = $this->getScenario();
-        if (!isset($scenarios[$scenario])) {
-            throw new \Exception("Unknown scenario: $scenario");
-        }
-
         if ($attributeNames === null) {
             $attributeNames = $this->activeAttributes();
         }
 
-        foreach ($this->getActiveValidators() as $validator) {
-            $validator->validateAttributes($this, $attributeNames);
-        }
         $this->afterValidate();
 
         return !$this->hasErrors();
@@ -373,91 +159,11 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
 
     }
 
-    /**
-     * Returns all the validators declared in [[rules()]].
-     *
-     * This method differs from [[getActiveValidators()]] in that the latter
-     * only returns the validators applicable to the current [[scenario]].
-     *
-     * Because this method returns an ArrayObject object, you may
-     * manipulate it by inserting or removing validators (useful in model behaviors).
-     * For example,
-     *
-     * ```php
-     * $model->validators[] = $newValidator;
-     * ```
-     *
-     * @return ArrayObject|\ActiveGenerator\validators\Validator[] all the validators declared in the model.
-     */
-    public function getValidators()
-    {
-        if ($this->_validators === null) {
-            $this->_validators = $this->createValidators();
-        }
-        return $this->_validators;
-    }
 
-    /**
-     * Returns the validators applicable to the current [[scenario]].
-     * @param string $attribute the name of the attribute whose applicable validators should be returned.
-     * If this is null, the validators for ALL attributes in the model will be returned.
-     * @return \ActiveGenerator\validators\Validator[] the validators applicable to the current [[scenario]].
-     */
-    public function getActiveValidators($attribute = null)
-    {
-        $validators = [];
-        $scenario = $this->getScenario();
-        foreach ($this->getValidators() as $validator) {
-            if ($validator->isActive($scenario) && ($attribute === null || in_array($attribute, $validator->getAttributeNames(), true))) {
-                $validators[] = $validator;
-            }
-        }
-        return $validators;
-    }
 
-    /**
-     * Creates validator objects based on the validation rules specified in [[rules()]].
-     * Unlike [[getValidators()]], each time this method is called, a new list of validators will be returned.
-     * @return ArrayObject validators
-     * @throws \Exception if any validation rule configuration is invalid
-     */
-    public function createValidators()
-    {
-        $validators = new ArrayObject;
-        foreach ($this->rules() as $rule) {
-            if ($rule instanceof Validator) {
-                $validators->append($rule);
-            } elseif (is_array($rule) && isset($rule[0], $rule[1])) { // attributes, validator type
-                $validator = Validator::createValidator($rule[1], $this, (array) $rule[0], array_slice($rule, 2));
-                $validators->append($validator);
-            } else {
-                throw new \Exception('Invalid validation rule: a rule must specify both attribute names and validator type.');
-            }
-        }
-        return $validators;
-    }
-
-    /**
-     * Returns a value indicating whether the attribute is required.
-     * This is determined by checking if the attribute is associated with a
-     * [[\ActiveGenerator\validators\RequiredValidator|required]] validation rule in the
-     * current [[scenario]].
-     *
-     * Note that when the validator has a conditional validation applied using
-     * [[\ActiveGenerator\validators\RequiredValidator::$when|$when]] this method will return
-     * `false` regardless of the `when` condition because it may be called be
-     * before the model is loaded with data.
-     *
-     * @param string $attribute attribute name
-     * @return bool whether the attribute is required
-     */
     public function isAttributeRequired($attribute)
     {
-        foreach ($this->getActiveValidators($attribute) as $validator) {
-            if ($validator instanceof RequiredValidator && $validator->when === null) {
-                return true;
-            }
-        }
+
         return false;
     }
 
@@ -472,12 +178,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         return in_array($attribute, $this->safeAttributes(), true);
     }
 
-    /**
-     * Returns a value indicating whether the attribute is active in the current scenario.
-     * @param string $attribute attribute name
-     * @return bool whether the attribute is active in the current scenario
-     * @see activeAttributes()
-     */
+
     public function isAttributeActive($attribute)
     {
         return in_array($attribute, $this->activeAttributes(), true);
@@ -665,14 +366,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         return $values;
     }
 
-    /**
-     * Sets the attribute values in a massive way.
-     * @param array $values attribute values (name => value) to be assigned to the model.
-     * @param bool $safeOnly whether the assignments should only be done to the safe attributes.
-     * A safe attribute is one that is associated with a validation rule in the current [[scenario]].
-     * @see safeAttributes()
-     * @see attributes()
-     */
+
     public function setAttributes($values, $safeOnly = true)
     {
         if (is_array($values)) {
@@ -699,70 +393,17 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
 
     }
 
-    /**
-     * Returns the scenario that this model is used in.
-     *
-     * Scenario affects how validation is performed and which attributes can
-     * be massively assigned.
-     *
-     * @return string the scenario that this model is in. Defaults to [[SCENARIO_DEFAULT]].
-     */
-    public function getScenario()
-    {
-        return $this->_scenario;
-    }
 
-    /**
-     * Sets the scenario for the model.
-     * Note that this method does not check if the scenario exists or not.
-     * The method [[validate()]] will perform this check.
-     * @param string $value the scenario that this model is in.
-     */
-    public function setScenario($value)
-    {
-        $this->_scenario = $value;
-    }
 
-    /**
-     * Returns the attribute names that are safe to be massively assigned in the current scenario.
-     * @return string[] safe attribute names
-     */
     public function safeAttributes()
     {
-        $scenario = $this->getScenario();
-        $scenarios = $this->scenarios();
-        if (!isset($scenarios[$scenario])) {
-            return [];
-        }
-        $attributes = [];
-        foreach ($scenarios[$scenario] as $attribute) {
-            if ($attribute[0] !== '!' && !in_array('!' . $attribute, $scenarios[$scenario])) {
-                $attributes[] = $attribute;
-            }
-        }
-
-        return $attributes;
+        return [];
     }
 
-    /**
-     * Returns the attribute names that are subject to validation in the current scenario.
-     * @return string[] safe attribute names
-     */
     public function activeAttributes()
     {
-        $scenario = $this->getScenario();
-        $scenarios = $this->scenarios();
-        if (!isset($scenarios[$scenario])) {
-            return [];
-        }
-        $attributes = $scenarios[$scenario];
-        foreach ($attributes as $i => $attribute) {
-            if ($attribute[0] === '!') {
-                $attributes[$i] = substr($attribute, 1);
-            }
-        }
 
-        return $attributes;
+        return [];
     }
 
     /**
@@ -876,51 +517,6 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         return $valid;
     }
 
-    /**
-     * Returns the list of fields that should be returned by default by [[toArray()]] when no specific fields are specified.
-     *
-     * A field is a named element in the returned array by [[toArray()]].
-     *
-     * This method should return an array of field names or field definitions.
-     * If the former, the field name will be treated as an object property name whose value will be used
-     * as the field value. If the latter, the array key should be the field name while the array value should be
-     * the corresponding field definition which can be either an object property name or a PHP callable
-     * returning the corresponding field value. The signature of the callable should be:
-     *
-     * ```php
-     * function ($model, $field) {
-     *     // return field value
-     * }
-     * ```
-     *
-     * For example, the following code declares four fields:
-     *
-     * - `email`: the field name is the same as the property name `email`;
-     * - `firstName` and `lastName`: the field names are `firstName` and `lastName`, and their
-     *   values are obtained from the `first_name` and `last_name` properties;
-     * - `fullName`: the field name is `fullName`. Its value is obtained by concatenating `first_name`
-     *   and `last_name`.
-     *
-     * ```php
-     * return [
-     *     'email',
-     *     'firstName' => 'first_name',
-     *     'lastName' => 'last_name',
-     *     'fullName' => function ($model) {
-     *         return $model->first_name . ' ' . $model->last_name;
-     *     },
-     * ];
-     * ```
-     *
-     * In this method, you may also want to return different lists of fields based on some context
-     * information. For example, depending on [[scenario]] or the privilege of the current application user,
-     * you may return different sets of visible fields or filter out some fields.
-     *
-     * The default implementation of this method returns [[attributes()]] indexed by the same attribute names.
-     *
-     * @return array the list of field names or field definitions.
-     * @see toArray()
-     */
     public function fields()
     {
         $fields = $this->attributes();
