@@ -355,11 +355,4 @@ SQL;
         return $prepare->fetchAll(\PDO::FETCH_COLUMN);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function createColumnSchemaBuilder($type, $length = null)
-    {
-        return new ColumnSchemaBuilder($type, $length, $this->db);
-    }
 }

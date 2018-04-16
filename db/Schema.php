@@ -8,8 +8,6 @@
 namespace ActiveGenerator\db;
 
 use ActiveGenerator\base\Object;
-use ActiveGenerator\base\NotSupportedException;
-use ActiveGenerator\base\InvalidCallException;
 
 /**
  * Schema is the base class for concrete DBMS-specific schema classes.
@@ -18,7 +16,6 @@ use ActiveGenerator\base\InvalidCallException;
  *
  * @property string $lastInsertID The row ID of the last row inserted, or the last value retrieved from the
  * sequence object. This property is read-only.
- * @property QueryBuilder $queryBuilder The query builder for this connection. This property is read-only.
  * @property string[] $schemaNames All schema names in the database, except system schemas. This property is
  * read-only.
  * @property string[] $tableNames All table names in the database. This property is read-only.
@@ -84,15 +81,11 @@ abstract class Schema extends Object
      * @var array list of loaded table metadata (table name => TableSchema)
      */
     private $_tables = [];
-    /**
-     * @var QueryBuilder the query builder for this database
-     */
-    private $_builder;
+
 
 
     /**
      * @return \ActiveGenerator\db\ColumnSchema
-     * @throws \ActiveGenerator\base\InvalidConfigException
      */
     protected function createColumnSchema()
     {
@@ -118,55 +111,13 @@ abstract class Schema extends Object
             return $this->_tables[$name];
         }
 
-        $db = $this->db;
         $realName = $this->getRawTableName($name);
-
-        if ($db->enableSchemaCache && !in_array($name, $db->schemaCacheExclude, true)) {
-            $key = $this->getCacheKey($name);
-            $table = isset($db->schemaCache[$key]) ? $db->schemaCache[$key] : null;
-            if ($refresh || !$table) {
-                $this->_tables[$name] = $table = $this->loadTableSchema($realName);
-                if ($table !== null) {
-                    $db->schemaCache[$key] = $table;
-                }
-            } else {
-                $this->_tables[$name] = $table;
-            }
-
-            return $this->_tables[$name];
-        }
 
         return $this->_tables[$name] = $this->loadTableSchema($realName);
     }
 
-    /**
-     * Returns the cache key for the specified table name.
-     * @param string $name the table name
-     * @return mixed the cache key
-     */
-    protected function getCacheKey($name)
-    {
-        return serialize(implode(',',[
-            __CLASS__,
-            $this->db->dsn,
-            $this->db->username,
-            $name,
-        ]));
-    }
 
-    /**
-     * Returns the cache tag name.
-     * This allows [[refresh()]] to invalidate all cached table schemas.
-     * @return string the cache tag name
-     */
-    protected function getCacheTag()
-    {
-        return md5(serialize([
-            __CLASS__,
-            $this->db->dsn,
-            $this->db->username,
-        ]));
-    }
+
 
     /**
      * Returns the metadata for all tables in the database.
@@ -225,18 +176,6 @@ abstract class Schema extends Object
     }
 
     /**
-     * @return QueryBuilder the query builder for this connection.
-     */
-    public function getQueryBuilder()
-    {
-        if ($this->_builder === null) {
-            $this->_builder = $this->createQueryBuilder();
-        }
-
-        return $this->_builder;
-    }
-
-    /**
      * Determines the PDO type for the given PHP data value.
      * @param mixed $data the data whose PDO type is to be determined
      * @return int the PDO type
@@ -268,183 +207,18 @@ abstract class Schema extends Object
         $this->_tables = [];
     }
 
-    /**
-     * Refreshes the particular table schema.
-     * This method cleans up cached table schema so that it can be re-created later
-     * to reflect the database schema change.
-     * @param string $name table name.
-     * @since 2.0.6
-     */
-    public function refreshTableSchema($name)
-    {
-        unset($this->_tables[$name]);
-        $this->_tableNames = [];
-        if ($this->db->enableSchemaCache && isset($this->db->schemaCache[$this->getCacheKey($name)])) {
-            unset($this->db->schemaCache[$this->getCacheKey($name)]);
-        }
-    }
 
-    /**
-     * Creates a query builder for the database.
-     * This method may be overridden by child classes to create a DBMS-specific query builder.
-     * @return QueryBuilder query builder instance
-     */
-    public function createQueryBuilder()
-    {
-        return new QueryBuilder($this->db);
-    }
 
-    /**
-     * Create a column schema builder instance giving the type and value precision.
-     *
-     * This method may be overridden by child classes to create a DBMS-specific column schema builder.
-     *
-     * @param string $type type of the column. See [[ColumnSchemaBuilder::$type]].
-     * @param int|string|array $length length or precision of the column. See [[ColumnSchemaBuilder::$length]].
-     * @return ColumnSchemaBuilder column schema builder instance
-     * @since 2.0.6
-     */
-    public function createColumnSchemaBuilder($type, $length = null)
-    {
-        return new ColumnSchemaBuilder($type, $length);
-    }
-
-    /**
-     * Returns all schema names in the database, including the default one but not system schemas.
-     * This method should be overridden by child classes in order to support this feature
-     * because the default implementation simply throws an exception.
-     * @return array all schema names in the database, except system schemas
-     * @throws NotSupportedException if this method is called
-     * @since 2.0.4
-     */
-    protected function findSchemaNames()
-    {
-        throw new NotSupportedException(get_class($this) . ' does not support fetching all schema names.');
-    }
-
-    /**
-     * Returns all table names in the database.
-     * This method should be overridden by child classes in order to support this feature
-     * because the default implementation simply throws an exception.
-     * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
-     * @return array all table names in the database. The names have NO schema name prefix.
-     * @throws NotSupportedException if this method is called
-     */
-    protected function findTableNames($schema = '')
-    {
-        throw new NotSupportedException(get_class($this) . ' does not support fetching all table names.');
-    }
-
-    /**
-     * Returns all unique indexes for the given table.
-     * Each array element is of the following structure:
-     *
-     * ```php
-     * [
-     *  'IndexName1' => ['col1' [, ...]],
-     *  'IndexName2' => ['col2' [, ...]],
-     * ]
-     * ```
-     *
-     * This method should be overridden by child classes in order to support this feature
-     * because the default implementation simply throws an exception
-     * @param TableSchema $table the table metadata
-     * @return array all unique indexes for the given table.
-     * @throws NotSupportedException if this method is called
-     */
-    public function findUniqueIndexes($table)
-    {
-        throw new NotSupportedException(get_class($this) . ' does not support getting unique indexes information.');
-    }
 
     /**
      * Returns the ID of the last inserted row or sequence value.
      * @param string $sequenceName name of the sequence object (required by some DBMS)
      * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
-     * @throws InvalidCallException if the DB connection is not active
      * @see http://www.php.net/manual/en/function.PDO-lastInsertId.php
      */
     public function getLastInsertID($sequenceName = '')
     {
-        if ($this->db->isActive) {
-            return $this->db->pdo->lastInsertId($sequenceName === '' ? null : $this->quoteTableName($sequenceName));
-        } else {
-            throw new InvalidCallException('DB Connection is not active.');
-        }
-    }
-
-    /**
-     * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
-     */
-    public function supportsSavepoint()
-    {
-        return $this->db->enableSavepoint;
-    }
-
-    /**
-     * Creates a new savepoint.
-     * @param string $name the savepoint name
-     */
-    public function createSavepoint($name)
-    {
-        $this->db->createCommand("SAVEPOINT $name")->execute();
-    }
-
-    /**
-     * Releases an existing savepoint.
-     * @param string $name the savepoint name
-     */
-    public function releaseSavepoint($name)
-    {
-        $this->db->createCommand("RELEASE SAVEPOINT $name")->execute();
-    }
-
-    /**
-     * Rolls back to a previously created savepoint.
-     * @param string $name the savepoint name
-     */
-    public function rollBackSavepoint($name)
-    {
-        $this->db->createCommand("ROLLBACK TO SAVEPOINT $name")->execute();
-    }
-
-    /**
-     * Sets the isolation level of the current transaction.
-     * @param string $level The transaction isolation level to use for this transaction.
-     * This can be one of [[Transaction::READ_UNCOMMITTED]], [[Transaction::READ_COMMITTED]], [[Transaction::REPEATABLE_READ]]
-     * and [[Transaction::SERIALIZABLE]] but also a string containing DBMS specific syntax to be used
-     * after `SET TRANSACTION ISOLATION LEVEL`.
-     * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
-     */
-    public function setTransactionIsolationLevel($level)
-    {
-        $this->db->createCommand("SET TRANSACTION ISOLATION LEVEL $level")->execute();
-    }
-
-    /**
-     * Executes the INSERT command, returning primary key values.
-     * @param string $table the table that new rows will be inserted into.
-     * @param array $columns the column data (name => value) to be inserted into the table.
-     * @return array|false primary key values or false if the command fails
-     * @since 2.0.4
-     */
-    public function insert($table, $columns)
-    {
-        $command = $this->db->createCommand()->insert($table, $columns);
-        if (!$command->execute()) {
-            return false;
-        }
-        $tableSchema = $this->getTableSchema($table);
-        $result = [];
-        foreach ($tableSchema->primaryKey as $name) {
-            if ($tableSchema->columns[$name]->autoIncrement) {
-                $result[$name] = $this->getLastInsertID($tableSchema->sequenceName);
-                break;
-            } else {
-                $result[$name] = isset($columns[$name]) ? $columns[$name] : $tableSchema->columns[$name]->defaultValue;
-            }
-        }
-        return $result;
+        return $this->db->lastInsertId($sequenceName === '' ? null : $this->quoteTableName($sequenceName));
     }
 
     /**
@@ -460,7 +234,7 @@ abstract class Schema extends Object
             return $str;
         }
 
-        if (($value = $this->db->getSlavePdo()->quote($str)) !== false) {
+        if (($value = $this->db->quote($str)) !== false) {
             return $value;
         } else {
             // the driver doesn't support quote (e.g. oci)
@@ -556,7 +330,7 @@ abstract class Schema extends Object
         if (strpos($name, '{{') !== false) {
             $name = preg_replace('/\\{\\{(.*?)\\}\\}/', '\1', $name);
 
-            return str_replace('%', $this->db->tablePrefix, $name);
+            return $name;
         } else {
             return $name;
         }
@@ -597,11 +371,11 @@ abstract class Schema extends Object
      *
      * @param \Exception $e
      * @param string $rawSql SQL that produced exception
-     * @return Exception
+     * @return \Exception
      */
     public function convertException(\Exception $e, $rawSql)
     {
-        if ($e instanceof Exception) {
+        if ($e instanceof \Exception) {
             return $e;
         }
 

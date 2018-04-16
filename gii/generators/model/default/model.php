@@ -3,7 +3,6 @@
  * This is the template for generating the model class of a specified table.
  */
 
-/* @var $this ActiveGenerator\web\View */
 /* @var $generator ActiveGenerator\gii\generators\model\Generator */
 /* @var $tableName string full table name */
 /* @var $className string class name */

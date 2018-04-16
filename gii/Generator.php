@@ -8,10 +8,7 @@
 namespace ActiveGenerator\gii;
 
 use ReflectionClass;
-use ActiveGenerator\base\InvalidConfigException;
 use ActiveGenerator\base\Model;
-use ActiveGenerator\helpers\VarDumper;
-use ActiveGenerator\web\View;
 
 /**
  * This is the base class for all generator classes.
@@ -210,42 +207,8 @@ abstract class Generator extends Model
 
 
 
-
-    /**
-     * Saves the generated code into files.
-     * @param CodeFile[] $files the code files to be saved
-     * @param array $answers
-     * @param string $results this parameter receives a value from this method indicating the log messages
-     * generated while saving the code files.
-     * @return bool whether files are successfully saved without any error.
-     */
-    public function save($files, $answers, &$results)
-    {
-        $lines = ['Generating code using template "' . $this->getTemplatePath() . '"...'];
-        $hasError = false;
-        foreach ($files as $file) {
-            $relativePath = $file->getRelativePath();
-            if (isset($answers[$file->id]) && !empty($answers[$file->id]) && $file->operation !== CodeFile::OP_SKIP) {
-                $error = $file->save();
-                if (is_string($error)) {
-                    $hasError = true;
-                    $lines[] = "generating $relativePath\n<span class=\"error\">$error</span>";
-                } else {
-                    $lines[] = $file->operation === CodeFile::OP_CREATE ? " generated $relativePath" : " overwrote $relativePath";
-                }
-            } else {
-                $lines[] = "   skipped $relativePath";
-            }
-        }
-        $lines[] = "done!\n";
-        $results = implode("\n", $lines);
-
-        return !$hasError;
-    }
-
     /**
      * @return string the root path of the template files that are currently being used.
-     * @throws InvalidConfigException if [[template]] is invalid
      */
     public function getTemplatePath()
     {

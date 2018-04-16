@@ -13,8 +13,6 @@ use ArrayIterator;
 use ReflectionClass;
 use IteratorAggregate;
 use ActiveGenerator\helpers\Inflector;
-use ActiveGenerator\validators\RequiredValidator;
-use ActiveGenerator\validators\Validator;
 
 /**
  * Model is the base class for data models.
@@ -36,7 +34,6 @@ use ActiveGenerator\validators\Validator;
  *
  * For more details and usage information on Model, see the [guide article on models](guide:structure-models).
  *
- * @property \ActiveGenerator\validators\Validator[] $activeValidators The validators applicable to the current
  * [[scenario]]. This property is read-only.
  * @property array $attributes Attribute values (name => value).
  * @property array $errors An array of errors for all attributes. Empty array is returned if no error. The
@@ -47,7 +44,6 @@ use ActiveGenerator\validators\Validator;
  * @property ArrayIterator $iterator An iterator for traversing the items in the list. This property is
  * read-only.
  * @property string $scenario The scenario that this model is in. Defaults to [[SCENARIO_DEFAULT]].
- * @property ArrayObject|\ActiveGenerator\validators\Validator[] $validators All the validators declared in the model.
  * This property is read-only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -323,7 +319,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * validation rules should be validated.
      * @param bool $clearErrors whether to call [[clearErrors()]] before performing validation
      * @return bool whether the validation is successful without any error.
-     * @throws InvalidParamException if the current scenario is unknown.
+     * @throws \Exception if the current scenario is unknown.
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
@@ -338,7 +334,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         $scenarios = $this->scenarios();
         $scenario = $this->getScenario();
         if (!isset($scenarios[$scenario])) {
-            throw new InvalidParamException("Unknown scenario: $scenario");
+            throw new \Exception("Unknown scenario: $scenario");
         }
 
         if ($attributeNames === null) {
@@ -423,7 +419,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * Creates validator objects based on the validation rules specified in [[rules()]].
      * Unlike [[getValidators()]], each time this method is called, a new list of validators will be returned.
      * @return ArrayObject validators
-     * @throws InvalidConfigException if any validation rule configuration is invalid
+     * @throws \Exception if any validation rule configuration is invalid
      */
     public function createValidators()
     {
@@ -435,7 +431,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
                 $validator = Validator::createValidator($rule[1], $this, (array) $rule[0], array_slice($rule, 2));
                 $validators->append($validator);
             } else {
-                throw new InvalidConfigException('Invalid validation rule: a rule must specify both attribute names and validator type.');
+                throw new \Exception('Invalid validation rule: a rule must specify both attribute names and validator type.');
             }
         }
         return $validators;

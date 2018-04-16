@@ -1,17 +1,14 @@
 <?php
 namespace ActiveGenerator\generator;
 
-use ActiveGenerator\db\Connection;
 
 class ScriptHelper {
 
     /**
      * @param string $tables Example: shared:website,rest_query,script_log;geoip:geo_zone
      */
-    public function generate($dir, $tables) {
+    public function generate(\PDO $db, $dir, $tables) {
         $tables = explode(';',$tables);
-        /** @var Connection $db */
-        $db = \ActiveGenerator\db\Query::getDb();
         $generator = new Generator($db);
         foreach ($tables as $databaseAndTables) {
             $databaseAndTables = explode(':',$databaseAndTables,2);
@@ -30,8 +27,10 @@ class ScriptHelper {
         $generator->generate('Model',$dir);
     }
 
-    protected function _getTables(Connection $db, $database) {
-        return $db->createCommand('show tables from '.$database)->queryColumn();
+    protected function _getTables(\PDO $db, $database) {
+        $prepare = $db->prepare('show tables from '.$database);
+        $prepare->execute();
+        return $prepare->fetchAll(\PDO::FETCH_COLUMN);
     }
 
 }

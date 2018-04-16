@@ -7,14 +7,10 @@
 
 namespace ActiveGenerator\gii\generators\model;
 
-use ActiveGenerator\db\ActiveQuery;
-use ActiveGenerator\db\ActiveRecord;
-use ActiveGenerator\db\Connection;
 use ActiveGenerator\db\Schema;
 use ActiveGenerator\db\TableSchema;
 use ActiveGenerator\gii\CodeFile;
 use ActiveGenerator\helpers\Inflector;
-use ActiveGenerator\base\NotSupportedException;
 
 /**
  * This generator will generate one or multiple ActiveRecord classes for the specified database table.
@@ -216,25 +212,22 @@ class Generator extends \ActiveGenerator\gii\Generator
         $schema = $this->getSchema();
 
         // Unique indexes rules
-        try {
-            $uniqueIndexes = $schema->findUniqueIndexes($table);
-            foreach ($uniqueIndexes as $uniqueColumns) {
-                // Avoid validating auto incremental columns
-                if (!$this->isColumnAutoIncremental($table, $uniqueColumns)) {
-                    $attributesCount = count($uniqueColumns);
+        $uniqueIndexes = $schema->findUniqueIndexes($table);
+        foreach ($uniqueIndexes as $uniqueColumns) {
+            // Avoid validating auto incremental columns
+            if (!$this->isColumnAutoIncremental($table, $uniqueColumns)) {
+                $attributesCount = count($uniqueColumns);
 
-                    if ($attributesCount === 1) {
-                        $rules[] = "[[" . $peerClassName.'::'.strtoupper($uniqueColumns[0]) . "], 'unique']";
-                    } elseif ($attributesCount > 1) {
-                        $uniqueColumns = array_map('strtoupper',$uniqueColumns);
-                        $columnsList = implode(", $peerClassName::", $uniqueColumns);
-                        $rules[] = "[[$peerClassName::$columnsList], 'unique', 'targetAttribute' => [$peerClassName::$columnsList]]";
-                    }
+                if ($attributesCount === 1) {
+                    $rules[] = "[[" . $peerClassName.'::'.strtoupper($uniqueColumns[0]) . "], 'unique']";
+                } elseif ($attributesCount > 1) {
+                    $uniqueColumns = array_map('strtoupper',$uniqueColumns);
+                    $columnsList = implode(", $peerClassName::", $uniqueColumns);
+                    $rules[] = "[[$peerClassName::$columnsList], 'unique', 'targetAttribute' => [$peerClassName::$columnsList]]";
                 }
             }
-        } catch (NotSupportedException $e) {
-            // doesn't support unique indexes information...do nothing
         }
+
 
         // Exist rules for foreign keys
         foreach ($table->foreignKeys as $refs) {
@@ -316,7 +309,6 @@ class Generator extends \ActiveGenerator\gii\Generator
 
     /**
      * @return string[] all db schema names or an array with a single empty string
-     * @throws NotSupportedException
      * @since 2.0.5
      */
     protected function getSchemaNames()
@@ -404,11 +396,7 @@ class Generator extends \ActiveGenerator\gii\Generator
     protected function isHasManyRelation($table, $fks)
     {
         $uniqueKeys = [$table->primaryKey];
-        try {
-            $uniqueKeys = array_merge($uniqueKeys, $this->getSchema()->findUniqueIndexes($table));
-        } catch (NotSupportedException $e) {
-            // ignore
-        }
+        $uniqueKeys = array_merge($uniqueKeys, $this->getSchema()->findUniqueIndexes($table));
         foreach ($uniqueKeys as $uniqueKey) {
             if (count(array_diff(array_merge($uniqueKey, $fks), array_intersect($uniqueKey, $fks))) === 0) {
                 return false;
@@ -444,11 +432,7 @@ class Generator extends \ActiveGenerator\gii\Generator
             return false;
         }
         $uniqueKeys = [$table->primaryKey];
-        try {
-            $uniqueKeys = array_merge($uniqueKeys, $this->getSchema()->findUniqueIndexes($table));
-        } catch (NotSupportedException $e) {
-            // ignore
-        }
+        $uniqueKeys = array_merge($uniqueKeys, $this->getSchema()->findUniqueIndexes($table));
         $result = [];
         // find all foreign key pairs that have all columns in an unique constraint
         $foreignKeys = array_values($table->foreignKeys);

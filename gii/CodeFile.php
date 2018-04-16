@@ -8,8 +8,6 @@
 namespace ActiveGenerator\gii;
 
 use ActiveGenerator\base\Object;
-use ActiveGenerator\gii\components\DiffRendererHtmlInline;
-use ActiveGenerator\helpers\Html;
 
 /**
  * CodeFile represents a code file to be generated.

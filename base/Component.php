@@ -91,8 +91,6 @@ namespace ActiveGenerator\base;
  *
  * For more details and usage information on Component, see the [guide article on components](guide:concept-components).
  *
- * @property Behavior[] $behaviors List of behaviors attached to this component. This property is read-only.
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
@@ -112,8 +110,7 @@ class Component extends Object
      * will be implicitly called when executing `$value = $component->property;`.
      * @param string $name the property name
      * @return mixed the property value or the value of a behavior's property
-     * @throws UnknownPropertyException if the property is not defined
-     * @throws InvalidCallException if the property is write-only.
+     * @throws \Exception if the property is not defined
      * @see __set()
      */
     public function __get($name)
@@ -125,10 +122,10 @@ class Component extends Object
         }
 
         if (method_exists($this, 'set' . $name)) {
-            throw new InvalidCallException('Getting write-only property: ' . get_class($this) . '::' . $name);
+            throw new \Exception('Getting write-only property: ' . get_class($this) . '::' . $name);
         }
 
-        throw new UnknownPropertyException('Getting unknown property: ' . get_class($this) . '::' . $name);
+        throw new \Exception('Getting unknown property: ' . get_class($this) . '::' . $name);
     }
 
     /**
@@ -144,8 +141,7 @@ class Component extends Object
      * will be implicitly called when executing `$component->property = $value;`.
      * @param string $name the property name or the event name
      * @param mixed $value the property value
-     * @throws UnknownPropertyException if the property is not defined
-     * @throws InvalidCallException if the property is read-only.
+     * @throws \Exception if the property is not defined
      * @see __get()
      */
     public function __set($name, $value)
@@ -160,10 +156,10 @@ class Component extends Object
 
 
         if (method_exists($this, 'get' . $name)) {
-            throw new InvalidCallException('Setting read-only property: ' . get_class($this) . '::' . $name);
+            throw new \Exception('Setting read-only property: ' . get_class($this) . '::' . $name);
         }
 
-        throw new UnknownPropertyException('Setting unknown property: ' . get_class($this) . '::' . $name);
+        throw new \Exception('Setting unknown property: ' . get_class($this) . '::' . $name);
     }
 
     /**
@@ -201,7 +197,7 @@ class Component extends Object
      * Do not call this method directly as it is a PHP magic method that
      * will be implicitly called when executing `unset($component->property)`.
      * @param string $name the property name
-     * @throws InvalidCallException if the property is read only.
+     * @throws \Exception if the property is read only.
      * @see http://php.net/manual/en/function.unset.php
      */
     public function __unset($name)
@@ -212,7 +208,7 @@ class Component extends Object
             return;
         }
 
-        throw new InvalidCallException('Unsetting an unknown or read-only property: ' . get_class($this) . '::' . $name);
+        throw new \Exception('Unsetting an unknown or read-only property: ' . get_class($this) . '::' . $name);
     }
 
 
