@@ -1,7 +1,7 @@
 <?php
-namespace ActiveRecord\generator;
+namespace ActiveGenerator\generator;
 
-use ActiveRecord\db\Connection;
+use ActiveGenerator\db\Connection;
 
 class ScriptHelper {
 
@@ -11,7 +11,7 @@ class ScriptHelper {
     public function generate($dir, $tables) {
         $tables = explode(';',$tables);
         /** @var Connection $db */
-        $db = \ActiveRecord\db\Query::getDb();
+        $db = \ActiveGenerator\db\Query::getDb();
         $generator = new Generator($db);
         foreach ($tables as $databaseAndTables) {
             $databaseAndTables = explode(':',$databaseAndTables,2);

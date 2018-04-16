@@ -1,7 +1,7 @@
 <?php
 
 namespace Model\Base;
-use ActiveRecord\Criteria;
+use ActiveGenerator\Criteria;
 use Model\VideoFileQuery;
 
 /**
@@ -57,7 +57,7 @@ use Model\VideoFileQuery;
   * @method VideoFileQuery withVideoFiles($params = [])
   * @method VideoFileQuery joinWithVideoFiles($params = null, $joinType = 'LEFT JOIN')
  */
-class CVideoFileQuery extends \ActiveRecord\db\ActiveQuery
+class CVideoFileQuery extends \ActiveGenerator\db\ActiveQuery
 {
     /*public function active()
     {

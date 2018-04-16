@@ -9,11 +9,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ActiveRecord\\generator\\": "generator",
-            "ActiveRecord\\base\\": "base",
-            "ActiveRecord\\db\\": "db",
-            "ActiveRecord\\helpers\\": "helpers",
-            "ActiveRecord\\gii\\": "gii"
+            "ActiveGenerator\\": ""
         }
     }
 }

@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\db;
+namespace ActiveGenerator\db;
 
-use ActiveRecord\base\Object;
+use ActiveGenerator\base\Object;
 
 /**
  * ColumnSchema class describes the metadata of a column in a database table.

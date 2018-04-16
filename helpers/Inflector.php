@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\helpers;
+namespace ActiveGenerator\helpers;
 
 /**
  * Inflector pluralizes and singularizes English nouns. It also contains some other useful methods.

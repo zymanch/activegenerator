@@ -1,6 +1,6 @@
 <?php
 
-namespace ActiveRecord\generator;
+namespace ActiveGenerator\generator;
 
 class Generator {
 
@@ -10,8 +10,8 @@ class Generator {
     /** @var  \PDO */
     protected $_db;
 
-    public $baseClass = 'ActiveRecord\db\ActiveRecord';
-    public $queryBaseClass = 'ActiveRecord\db\ActiveQuery';
+    public $baseClass = 'ActiveGenerator\db\ActiveRecord';
+    public $queryBaseClass = 'ActiveGenerator\db\ActiveQuery';
 
     public function __construct(\PDO $db) {
         $this->_db = $db;
@@ -34,7 +34,7 @@ class Generator {
         @exec('rm -fR ' . $absolutePath . '/Base');
         $generator = $this->_getGenerator($namespace, $absolutePath);
         $files = $generator->generate();
-        /** @var \ActiveRecord\gii\CodeFile $file */
+        /** @var \ActiveGenerator\gii\CodeFile $file */
         foreach ($files as $file) {
             $success = $file->save();
             if ($success !== true) {
@@ -50,10 +50,10 @@ class Generator {
      * @param GeneratorDatabase $database
      * @param $namespace
      * @param $path
-     * @return \ActiveRecord\gii\generators\model\Generator
+     * @return \ActiveGenerator\gii\generators\model\Generator
      */
     protected function _getGenerator($namespace, $path) {
-        $generator = new \ActiveRecord\gii\generators\model\Generator();
+        $generator = new \ActiveGenerator\gii\generators\model\Generator();
         $generator->setDbConnection($this->_db);
         $generator->ns = $namespace;
         $generator->path = $path;

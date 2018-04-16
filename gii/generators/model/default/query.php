@@ -3,11 +3,10 @@
  * This is the template for generating the ActiveQuery class.
  */
 
-/* @var $this ActiveRecord\web\View */
-/* @var $generator ActiveRecord\gii\generators\model\Generator */
+/* @var $generator ActiveGenerator\gii\generators\model\Generator */
 /* @var $tableName string full table name */
 /* @var $className string class name */
-/* @var $tableSchema ActiveRecord\db\TableSchema */
+/* @var $tableSchema ActiveGenerator\db\TableSchema */
 /* @var $labels string[] list of attribute labels (name => label) */
 /* @var $rules string[] list of validation rules */
 /* @var $relations array list of relations (name => relation declaration) */
@@ -18,7 +17,7 @@ echo "<?php\n";
 ?>
 
 namespace <?= $ns.'\\'.$sub ?>;
-use ActiveRecord\Criteria;
+use ActiveGenerator\Criteria;
 use <?= $ns.'\\'.$mainQueryClassName;?>;
 
 /**

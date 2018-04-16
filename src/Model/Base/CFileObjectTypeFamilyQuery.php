@@ -1,7 +1,7 @@
 <?php
 
 namespace Model\Base;
-use ActiveRecord\Criteria;
+use ActiveGenerator\Criteria;
 use Model\FileObjectTypeFamilyQuery;
 
 /**
@@ -19,7 +19,7 @@ use Model\FileObjectTypeFamilyQuery;
   * @method FileObjectTypeFamilyQuery withFileObjectTypes($params = [])
   * @method FileObjectTypeFamilyQuery joinWithFileObjectTypes($params = null, $joinType = 'LEFT JOIN')
  */
-class CFileObjectTypeFamilyQuery extends \ActiveRecord\db\ActiveQuery
+class CFileObjectTypeFamilyQuery extends \ActiveGenerator\db\ActiveQuery
 {
     /*public function active()
     {

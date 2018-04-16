@@ -8,7 +8,7 @@
  */
 return [
     'db' => [
-        'class' => \ActiveRecord\db\Connection::class,
+        'class' => \ActiveGenerator\db\Connection::class,
         'properties' => [
             'dsn' => 'mysql:host='.$secure['mysql']['mysqlcluster']['hostname'].';dbname=shared',
             'username' => $secure['mysql']['mysqlcluster']['username'],

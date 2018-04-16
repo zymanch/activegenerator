@@ -5,13 +5,13 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\gii;
+namespace ActiveGenerator\gii;
 
 use ReflectionClass;
-use ActiveRecord\base\InvalidConfigException;
-use ActiveRecord\base\Model;
-use ActiveRecord\helpers\VarDumper;
-use ActiveRecord\web\View;
+use ActiveGenerator\base\InvalidConfigException;
+use ActiveGenerator\base\Model;
+use ActiveGenerator\helpers\VarDumper;
+use ActiveGenerator\web\View;
 
 /**
  * This is the base class for all generator classes.
@@ -48,11 +48,11 @@ abstract class Generator extends Model
      */
     public $template = 'default';
     /**
-     * @var bool whether the strings will be generated using `ActiveRecord::t()` or normal strings.
+     * @var bool whether the strings will be generated using `ActiveGenerator::t()` or normal strings.
      */
     public $enableI18N = false;
     /**
-     * @var string the message category used by `ActiveRecord::t()` when `$enableI18N` is `true`.
+     * @var string the message category used by `ActiveGenerator::t()` when `$enableI18N` is `true`.
      * Defaults to `app`.
      */
     public $messageCategory = 'app';
@@ -66,7 +66,7 @@ abstract class Generator extends Model
     /**
      * Generates the code based on the current user input and the specified code template files.
      * This is the main method that child classes should implement.
-     * Please refer to [[\ActiveRecord\gii\generators\controller\Generator::generate()]] as an example
+     * Please refer to [[\ActiveGenerator\gii\generators\controller\Generator::generate()]] as an example
      * on how to implement this method.
      * @param $path
      * @return CodeFile[] a list of code files to be created.

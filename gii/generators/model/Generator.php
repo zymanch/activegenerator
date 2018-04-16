@@ -5,16 +5,16 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\gii\generators\model;
+namespace ActiveGenerator\gii\generators\model;
 
-use ActiveRecord\db\ActiveQuery;
-use ActiveRecord\db\ActiveRecord;
-use ActiveRecord\db\Connection;
-use ActiveRecord\db\Schema;
-use ActiveRecord\db\TableSchema;
-use ActiveRecord\gii\CodeFile;
-use ActiveRecord\helpers\Inflector;
-use ActiveRecord\base\NotSupportedException;
+use ActiveGenerator\db\ActiveQuery;
+use ActiveGenerator\db\ActiveRecord;
+use ActiveGenerator\db\Connection;
+use ActiveGenerator\db\Schema;
+use ActiveGenerator\db\TableSchema;
+use ActiveGenerator\gii\CodeFile;
+use ActiveGenerator\helpers\Inflector;
+use ActiveGenerator\base\NotSupportedException;
 
 /**
  * This generator will generate one or multiple ActiveRecord classes for the specified database table.
@@ -22,15 +22,15 @@ use ActiveRecord\base\NotSupportedException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Generator extends \ActiveRecord\gii\Generator
+class Generator extends \ActiveGenerator\gii\Generator
 {
 
     /** @var  \PDO */
     protected $_connect;
-    public $baseClass = 'ActiveRecord\db\ActiveRecord';
+    public $baseClass = 'ActiveGenerator\db\ActiveRecord';
     public $generateLabelsFromComments = false;
     public $queryClass;
-    public $queryBaseClass = 'ActiveRecord\db\ActiveQuery';
+    public $queryBaseClass = 'ActiveGenerator\db\ActiveQuery';
     public $classNames;
 
     public $sub;
@@ -136,36 +136,8 @@ class Generator extends \ActiveRecord\gii\Generator
     }
 
     /**
-     * Generates the properties for the specified table.
-     * @param \ActiveRecord\db\TableSchema $table the table schema
-     * @return array the generated properties (property => type)
-     * @since 2.0.6
-     */
-    private function generateProperties($table)
-    {
-        $properties = [];
-        foreach ($table->columns as $column) {
-            $columnPhpType = $column->phpType;
-            if ($columnPhpType === 'integer') {
-                $type = 'int';
-            } elseif ($columnPhpType === 'boolean') {
-                $type = 'bool';
-            } else {
-                $type = $columnPhpType;
-            }
-            $properties[$column->name] = [
-                'type' => $type,
-                'name' => $column->name,
-                'comment' => $column->comment,
-            ];
-        }
-
-        return $properties;
-    }
-
-    /**
      * Generates the attribute labels for the specified table.
-     * @param \ActiveRecord\db\TableSchema $table the table schema
+     * @param \ActiveGenerator\db\TableSchema $table the table schema
      * @return array the generated attribute labels (name => label)
      */
     public function generateLabels($table)
@@ -190,7 +162,7 @@ class Generator extends \ActiveRecord\gii\Generator
 
     /**
      * Generates validation rules for the specified table.
-     * @param \ActiveRecord\db\TableSchema $table the table schema
+     * @param \ActiveGenerator\db\TableSchema $table the table schema
      * @return array the generated validation rules
      */
     public function generateRules($table, $peerClassName)
@@ -292,7 +264,7 @@ class Generator extends \ActiveRecord\gii\Generator
 
     /**
      * Generates relations using a junction table by adding an extra viaTable().
-     * @param \ActiveRecord\db\TableSchema $table the table being checked
+     * @param \ActiveGenerator\db\TableSchema $table the table being checked
      * @param array $fks obtained from the checkJunctionTable() method
      * @param array $relations
      * @return array modified $relations
@@ -358,7 +330,7 @@ class Generator extends \ActiveRecord\gii\Generator
     }
 
     protected function getSchema() {
-        $schema = new \ActiveRecord\db\mysql\Schema();
+        $schema = new \ActiveGenerator\db\mysql\Schema();
         $schema->db = $this->getDbConnection();
         return $schema;
     }
@@ -462,7 +434,7 @@ class Generator extends \ActiveRecord\gii\Generator
 
     /**
      * Checks if the given table is a junction table, that is it has at least one pair of unique foreign keys.
-     * @param \ActiveRecord\db\TableSchema the table being checked
+     * @param \ActiveGenerator\db\TableSchema the table being checked
      * @return array|bool all unique foreign key pairs if the table is a junction table,
      * or false if the table is not a junction table.
      */
@@ -504,7 +476,7 @@ class Generator extends \ActiveRecord\gii\Generator
     /**
      * Generate a relation name for the specified table and a base name.
      * @param array $relations the relations being generated currently.
-     * @param \ActiveRecord\db\TableSchema $table the table schema
+     * @param \ActiveGenerator\db\TableSchema $table the table schema
      * @param string $key a base name that the relation name may be generated from
      * @param bool $multiple whether this is a has-many relation
      * @return string the relation name
@@ -605,7 +577,7 @@ class Generator extends \ActiveRecord\gii\Generator
 
     /**
      * Checks if any of the specified columns is auto incremental.
-     * @param \ActiveRecord\db\TableSchema $table the table schema
+     * @param \ActiveGenerator\db\TableSchema $table the table schema
      * @param array $columns columns to check for autoIncrement property
      * @return bool whether any of the specified columns is auto incremental.
      */

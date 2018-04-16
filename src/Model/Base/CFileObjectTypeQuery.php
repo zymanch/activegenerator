@@ -1,7 +1,7 @@
 <?php
 
 namespace Model\Base;
-use ActiveRecord\Criteria;
+use ActiveGenerator\Criteria;
 use Model\FileObjectTypeQuery;
 
 /**
@@ -35,7 +35,7 @@ use Model\FileObjectTypeQuery;
   * @method FileObjectTypeQuery withVideos($params = [])
   * @method FileObjectTypeQuery joinWithVideos($params = null, $joinType = 'LEFT JOIN')
  */
-class CFileObjectTypeQuery extends \ActiveRecord\db\ActiveQuery
+class CFileObjectTypeQuery extends \ActiveGenerator\db\ActiveQuery
 {
     /*public function active()
     {

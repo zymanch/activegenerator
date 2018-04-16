@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\db\mysql;
+namespace ActiveGenerator\db\mysql;
 
-use ActiveRecord\db\Expression;
-use ActiveRecord\db\TableSchema;
-use ActiveRecord\db\ColumnSchema;
+use ActiveGenerator\db\Expression;
+use ActiveGenerator\db\TableSchema;
+use ActiveGenerator\db\ColumnSchema;
 
 /**
  * Schema is the class for retrieving metadata from a MySQL database (version 4.1.x and 5.x).
@@ -17,7 +17,7 @@ use ActiveRecord\db\ColumnSchema;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Schema extends \ActiveRecord\db\Schema
+class Schema extends \ActiveGenerator\db\Schema
 {
     /**
      * @var array mapping from physical column types (keys) to abstract column types (values)
@@ -76,14 +76,6 @@ class Schema extends \ActiveRecord\db\Schema
         return strpos($name, '`') !== false || $name === '*' ? $name : "`$name`";
     }
 
-    /**
-     * Creates a query builder for the MySQL database.
-     * @return QueryBuilder query builder instance
-     */
-    public function createQueryBuilder()
-    {
-        return new QueryBuilder($this->db);
-    }
 
     /**
      * Loads the metadata for the specified table.

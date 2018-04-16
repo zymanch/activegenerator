@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\base;
+namespace ActiveGenerator\base;
 
 
 /**
  * Component is the base class that implements the *property*, *event* and *behavior* features.
  *
  * Component provides the *event* and *behavior* features, in addition to the *property* feature which is implemented in
- * its parent class [[\ActiveRecord\base\Object|Object]].
+ * its parent class [[\ActiveGenerator\base\Object|Object]].
  *
  * Event is a way to "inject" custom code into existing code at certain places. For example, a comment object can trigger
  * an "add" event when the user adds a comment. We can write custom code and attach it to this event so that when the event
@@ -86,7 +86,7 @@ namespace ActiveRecord\base;
  * ]
  * ```
  *
- * where `as tree` stands for attaching a behavior named `tree`, and the array will be passed to [[\ActiveRecord::createObject()]]
+ * where `as tree` stands for attaching a behavior named `tree`, and the array will be passed to [[\ActiveGenerator::createObject()]]
  * to create the behavior object.
  *
  * For more details and usage information on Component, see the [guide article on components](guide:concept-components).

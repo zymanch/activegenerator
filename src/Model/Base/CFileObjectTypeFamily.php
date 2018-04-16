@@ -15,7 +15,7 @@ namespace Model\Base;
  *
  * @property \Model\FileObjectType[] $fileObjectTypes
  */
-class CFileObjectTypeFamily extends \ActiveRecord\db\ActiveRecord
+class CFileObjectTypeFamily extends \ActiveGenerator\db\ActiveRecord
 {
     /**
      * @inheritdoc

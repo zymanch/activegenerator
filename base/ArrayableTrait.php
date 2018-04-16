@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\base;
+namespace ActiveGenerator\base;
 
-use ActiveRecord\helpers\ArrayHelper;
-use ActiveRecord\web\Link;
-use ActiveRecord\web\Linkable;
+use ActiveGenerator\helpers\ArrayHelper;
+use ActiveGenerator\web\Link;
+use ActiveGenerator\web\Linkable;
 
 /**
  * ArrayableTrait provides a common implementation of the [[Arrayable]] interface.

@@ -5,7 +5,7 @@
  * Date: 27.04.2017
  * Time: 12:51
  */
-namespace ActiveRecord\generator;
+namespace ActiveGenerator\generator;
 
 class GeneratorDatabase {
 

@@ -23,7 +23,7 @@ namespace Model\Base;
  * @property \Model\FileObjectTypeFamily $fileObjectTypeFamily
  * @property \Model\Video[] $videos
  */
-class CFileObjectType extends \ActiveRecord\db\ActiveRecord
+class CFileObjectType extends \ActiveGenerator\db\ActiveRecord
 {
     /**
      * @inheritdoc

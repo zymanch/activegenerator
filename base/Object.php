@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\base;
+namespace ActiveGenerator\base;
 
 
 /**

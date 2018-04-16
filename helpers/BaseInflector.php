@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\helpers;
+namespace ActiveGenerator\helpers;
 
 
 /**

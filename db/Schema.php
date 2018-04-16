@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\db;
+namespace ActiveGenerator\db;
 
-use ActiveRecord\base\Object;
-use ActiveRecord\base\NotSupportedException;
-use ActiveRecord\base\InvalidCallException;
+use ActiveGenerator\base\Object;
+use ActiveGenerator\base\NotSupportedException;
+use ActiveGenerator\base\InvalidCallException;
 
 /**
  * Schema is the base class for concrete DBMS-specific schema classes.
@@ -69,7 +69,7 @@ abstract class Schema extends Object
      * If left part is found in DB error message exception class from the right part is used.
      */
     public $exceptionMap = [
-        'SQLSTATE[23' => 'ActiveRecord\db\IntegrityException',
+        'SQLSTATE[23' => 'ActiveGenerator\db\IntegrityException',
     ];
 
     /**
@@ -91,12 +91,12 @@ abstract class Schema extends Object
 
 
     /**
-     * @return \ActiveRecord\db\ColumnSchema
-     * @throws \ActiveRecord\base\InvalidConfigException
+     * @return \ActiveGenerator\db\ColumnSchema
+     * @throws \ActiveGenerator\base\InvalidConfigException
      */
     protected function createColumnSchema()
     {
-        return new \ActiveRecord\db\ColumnSchema();
+        return new \ActiveGenerator\db\ColumnSchema();
     }
 
     /**
@@ -605,7 +605,7 @@ abstract class Schema extends Object
             return $e;
         }
 
-        $exceptionClass = '\ActiveRecord\db\Exception';
+        $exceptionClass = '\ActiveGenerator\db\Exception';
         foreach ($this->exceptionMap as $error => $class) {
             if (strpos($e->getMessage(), $error) !== false) {
                 $exceptionClass = $class;

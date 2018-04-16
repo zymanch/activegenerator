@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\db;
+namespace ActiveGenerator\db;
 
-use ActiveRecord\base\Object;
-use ActiveRecord\base\InvalidParamException;
+use ActiveGenerator\base\Object;
+use ActiveGenerator\base\InvalidParamException;
 
 /**
  * TableSchema represents the metadata of a database table.

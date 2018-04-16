@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\gii;
+namespace ActiveGenerator\gii;
 
-use ActiveRecord\base\Object;
-use ActiveRecord\gii\components\DiffRendererHtmlInline;
-use ActiveRecord\helpers\Html;
+use ActiveGenerator\base\Object;
+use ActiveGenerator\gii\components\DiffRendererHtmlInline;
+use ActiveGenerator\helpers\Html;
 
 /**
  * CodeFile represents a code file to be generated.

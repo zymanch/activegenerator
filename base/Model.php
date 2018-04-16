@@ -5,16 +5,16 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace ActiveRecord\base;
+namespace ActiveGenerator\base;
 
 use ArrayAccess;
 use ArrayObject;
 use ArrayIterator;
 use ReflectionClass;
 use IteratorAggregate;
-use ActiveRecord\helpers\Inflector;
-use ActiveRecord\validators\RequiredValidator;
-use ActiveRecord\validators\Validator;
+use ActiveGenerator\helpers\Inflector;
+use ActiveGenerator\validators\RequiredValidator;
+use ActiveGenerator\validators\Validator;
 
 /**
  * Model is the base class for data models.
@@ -36,7 +36,7 @@ use ActiveRecord\validators\Validator;
  *
  * For more details and usage information on Model, see the [guide article on models](guide:structure-models).
  *
- * @property \ActiveRecord\validators\Validator[] $activeValidators The validators applicable to the current
+ * @property \ActiveGenerator\validators\Validator[] $activeValidators The validators applicable to the current
  * [[scenario]]. This property is read-only.
  * @property array $attributes Attribute values (name => value).
  * @property array $errors An array of errors for all attributes. Empty array is returned if no error. The
@@ -47,7 +47,7 @@ use ActiveRecord\validators\Validator;
  * @property ArrayIterator $iterator An iterator for traversing the items in the list. This property is
  * read-only.
  * @property string $scenario The scenario that this model is in. Defaults to [[SCENARIO_DEFAULT]].
- * @property ArrayObject|\ActiveRecord\validators\Validator[] $validators All the validators declared in the model.
+ * @property ArrayObject|\ActiveGenerator\validators\Validator[] $validators All the validators declared in the model.
  * This property is read-only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -221,7 +221,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
     /**
      * Returns the form name that this model class should use.
      *
-     * The form name is mainly used by [[\ActiveRecord\widgets\ActiveForm]] to determine how to name
+     * The form name is mainly used by [[\ActiveGenerator\widgets\ActiveForm]] to determine how to name
      * the input fields for the attributes in a model. If the form name is "A" and an attribute
      * name is "b", then the corresponding input name would be "A[b]". If the form name is
      * an empty string, then the input name would be "b".
@@ -391,7 +391,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * $model->validators[] = $newValidator;
      * ```
      *
-     * @return ArrayObject|\ActiveRecord\validators\Validator[] all the validators declared in the model.
+     * @return ArrayObject|\ActiveGenerator\validators\Validator[] all the validators declared in the model.
      */
     public function getValidators()
     {
@@ -405,7 +405,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
      * Returns the validators applicable to the current [[scenario]].
      * @param string $attribute the name of the attribute whose applicable validators should be returned.
      * If this is null, the validators for ALL attributes in the model will be returned.
-     * @return \ActiveRecord\validators\Validator[] the validators applicable to the current [[scenario]].
+     * @return \ActiveGenerator\validators\Validator[] the validators applicable to the current [[scenario]].
      */
     public function getActiveValidators($attribute = null)
     {
@@ -444,11 +444,11 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
     /**
      * Returns a value indicating whether the attribute is required.
      * This is determined by checking if the attribute is associated with a
-     * [[\ActiveRecord\validators\RequiredValidator|required]] validation rule in the
+     * [[\ActiveGenerator\validators\RequiredValidator|required]] validation rule in the
      * current [[scenario]].
      *
      * Note that when the validator has a conditional validation applied using
-     * [[\ActiveRecord\validators\RequiredValidator::$when|$when]] this method will return
+     * [[\ActiveGenerator\validators\RequiredValidator::$when|$when]] this method will return
      * `false` regardless of the `when` condition because it may be called be
      * before the model is loaded with data.
      *
