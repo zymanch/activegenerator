@@ -13,6 +13,7 @@ class Generator {
     public $baseClass = 'ActiveRecord\db\ActiveRecord';
     public $queryBaseClass = 'ActiveRecord\db\ActiveQuery';
     public $namespace = 'Model';
+    public $prefix = 'C';
     public $path = '';
 
     public function __construct(\PDO $db) {
@@ -57,6 +58,7 @@ class Generator {
         $generator->ns = $namespace;
         $generator->path = $path;
         $generator->sub  = 'Base';
+        $generator->prefix  = $this->prefix;
         $generator->baseClass = $this->baseClass;
         $generator->queryBaseClass = $this->queryBaseClass;
         foreach ($this->_databases as $currentDatabase) {

@@ -45,6 +45,7 @@ $db = new PDO('mysql:host=sanddb.gtflixtv.com;dbname=shared', 'develop','develop
 $tables = 'gtf:video,video_file,file_object_type,file_object_type_family';
 $tables = explode(';',$tables);
 $generator = new \ActiveGenerator\generator\Generator($db);
+$generator->path = __DIR__.'/src/Model';
 foreach ($tables as $databaseAndTables) {
     $databaseAndTables = explode(':',$databaseAndTables,2);
     $database = $databaseAndTables[0];
@@ -59,7 +60,7 @@ foreach ($tables as $databaseAndTables) {
     }
     $generator->addDatabase($database);
 }
-$generator->generate(__DIR__.'/src/Model');
+$generator->generate();
 
 function _getTables(\PDO $db, $database) {
     $prepare = $db->prepare('show tables from '.$database);

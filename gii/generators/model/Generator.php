@@ -31,6 +31,7 @@ class Generator extends \ActiveGenerator\gii\Generator
 
     public $sub;
     public $ns;
+    public $prefix = 'C';
 
     public $path;
 
@@ -503,7 +504,7 @@ class Generator extends \ActiveGenerator\gii\Generator
     protected function generateClassName($tableName)
     {
         if (isset($this->classNames[$tableName])) {
-            return 'C'.$this->classNames[$tableName];
+            return $this->prefix.$this->classNames[$tableName];
         }
         throw new \Exception('Table not needed:'.$tableName);
     }
