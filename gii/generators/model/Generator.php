@@ -529,7 +529,7 @@ class Generator extends \ActiveGenerator\gii\Generator
             $tableName = explode('.',$tableName);
             $tableName = $tableName[1];
         }
-        return 'C'.implode('', array_map('ucfirst', explode('_', $tableName.'_peer')));
+        return $this->prefix.implode('', array_map('ucfirst', explode('_', $tableName.'_peer')));
     }
 
     /**
