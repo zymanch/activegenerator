@@ -10,8 +10,10 @@ class Generator {
     /** @var  \PDO */
     protected $_db;
 
-    public $baseClass = 'ActiveGenerator\db\ActiveRecord';
-    public $queryBaseClass = 'ActiveGenerator\db\ActiveQuery';
+    public $baseClass = 'ActiveRecord\db\ActiveRecord';
+    public $queryBaseClass = 'ActiveRecord\db\ActiveQuery';
+    public $namespace = 'Model';
+    public $path = '';
 
     public function __construct(\PDO $db) {
         $this->_db = $db;
@@ -21,15 +23,12 @@ class Generator {
         $this->_databases[] = $database;
     }
 
-    /**
-     * @param string $path Example: HOME.'ar'
-     */
-    public function generate($namespace, $path) {
-        $absolutePath = realpath($path);
-        if (!$absolutePath) {
-            throw new \Exception('Folder not found:'.$path);
+    public function generate() {
+        $absolutePath = realpath($this->path);
+        if (!$this->path || !$absolutePath) {
+            throw new \Exception('Folder not found:'.$this->path);
         }
-        $namespace = trim($namespace,'\\');
+        $namespace = trim($this->namespace,'\\');
         $absolutePath = rtrim($absolutePath,'/');
         @exec('rm -fR ' . $absolutePath . '/Base');
         $generator = $this->_getGenerator($namespace, $absolutePath);

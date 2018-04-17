@@ -27,10 +27,6 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
     private $_errors;
 
 
-    public function rules()
-    {
-        return [];
-    }
 
     /**
      * Returns the form name that this model class should use.
@@ -116,48 +112,6 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         return [];
     }
 
-    public function validate($attributeNames = null, $clearErrors = true)
-    {
-        if ($clearErrors) {
-            $this->clearErrors();
-        }
-
-        if (!$this->beforeValidate()) {
-            return false;
-        }
-
-        if ($attributeNames === null) {
-            $attributeNames = $this->activeAttributes();
-        }
-
-        $this->afterValidate();
-
-        return !$this->hasErrors();
-    }
-
-    /**
-     * This method is invoked before validation starts.
-     * The default implementation raises a `beforeValidate` event.
-     * You may override this method to do preliminary checks before validation.
-     * Make sure the parent implementation is invoked so that the event can be raised.
-     * @return bool whether the validation should be executed. Defaults to true.
-     * If false is returned, the validation will stop and the model is considered invalid.
-     */
-    public function beforeValidate()
-    {
-        return true;
-    }
-
-    /**
-     * This method is invoked after validation ends.
-     * The default implementation raises an `afterValidate` event.
-     * You may override this method to do postprocessing after validation.
-     * Make sure the parent implementation is invoked so that the event can be raised.
-     */
-    public function afterValidate()
-    {
-
-    }
 
 
 
@@ -493,28 +447,6 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
         }
 
         return $success;
-    }
-
-    /**
-     * Validates multiple models.
-     * This method will validate every model. The models being validated may
-     * be of the same or different types.
-     * @param array $models the models to be validated
-     * @param array $attributeNames list of attribute names that should be validated.
-     * If this parameter is empty, it means any attribute listed in the applicable
-     * validation rules should be validated.
-     * @return bool whether all models are valid. False will be returned if one
-     * or multiple models have validation error.
-     */
-    public static function validateMultiple($models, $attributeNames = null)
-    {
-        $valid = true;
-        /* @var $model Model */
-        foreach ($models as $model) {
-            $valid = $model->validate($attributeNames) && $valid;
-        }
-
-        return $valid;
     }
 
     public function fields()

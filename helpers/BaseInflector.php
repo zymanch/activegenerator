@@ -19,10 +19,7 @@ namespace ActiveGenerator\helpers;
  */
 class BaseInflector
 {
-    /**
-     * @var array the rules for converting a word into its plural form.
-     * The keys are the regular expressions and the values are the corresponding replacements.
-     */
+
     public static $plurals = [
         '/([nrlm]ese|deer|fish|sheep|measles|ois|pox|media)$/i' => '\1',
         '/^(sea[- ]bass)$/i' => '\1',
@@ -55,10 +52,7 @@ class BaseInflector
         '/^$/' => '',
         '/$/' => 's',
     ];
-    /**
-     * @var array the rules for converting a word into its singular form.
-     * The keys are the regular expressions and the values are the corresponding replacements.
-     */
+
     public static $singulars = [
         '/([nrlm]ese|deer|fish|sheep|measles|ois|pox|media|ss)$/i' => '\1',
         '/^(sea[- ]bass)$/i' => '\1',

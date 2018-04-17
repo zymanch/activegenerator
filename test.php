@@ -59,7 +59,7 @@ foreach ($tables as $databaseAndTables) {
     }
     $generator->addDatabase($database);
 }
-$generator->generate('Model',__DIR__.'/src/Model');
+$generator->generate(__DIR__.'/src/Model');
 
 function _getTables(\PDO $db, $database) {
     $prepare = $db->prepare('show tables from '.$database);

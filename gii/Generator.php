@@ -185,26 +185,6 @@ abstract class Generator extends Model
         return '';
     }
 
-    /**
-     * @inheritdoc
-     *
-     * Child classes should override this method like the following so that the parent
-     * rules are included:
-     *
-     * ~~~
-     * return array_merge(parent::rules(), [
-     *     ...rules for the child class...
-     * ]);
-     * ~~~
-     */
-    public function rules()
-    {
-        return [
-            [['template'], 'required', 'message' => 'A code template must be selected.'],
-            [['template'], 'validateTemplate'],
-        ];
-    }
-
 
 
     /**
@@ -236,74 +216,7 @@ abstract class Generator extends Model
         return $result;
     }
 
-    /**
-     * Validates the template selection.
-     * This method validates whether the user selects an existing template
-     * and the template contains all required template files as specified in [[requiredTemplates()]].
-     */
-    public function validateTemplate()
-    {
-        $templates = $this->templates;
-        if (!isset($templates[$this->template])) {
-            $this->addError('template', 'Invalid template selection.');
-        } else {
-            $templatePath = $this->templates[$this->template];
-            foreach ($this->requiredTemplates() as $template) {
-                if (!is_file($templatePath . '/' . $template)) {
-                    $this->addError('template', "Unable to find the required code template file '$template'.");
-                }
-            }
-        }
-    }
 
-    /**
-     * An inline validator that checks if the attribute value refers to an existing class name.
-     * If the `extends` option is specified, it will also check if the class is a child class
-     * of the class represented by the `extends` option.
-     * @param string $attribute the attribute being validated
-     * @param array $params the validation options
-     */
-    public function validateClass($attribute, $params)
-    {
-        $class = $this->$attribute;
-        try {
-            if (class_exists($class)) {
-                if (isset($params['extends'])) {
-                    if (ltrim($class, '\\') !== ltrim($params['extends'], '\\') && !is_subclass_of($class, $params['extends'])) {
-                        $this->addError($attribute, "'$class' must extend from {$params['extends']} or its child class.");
-                    }
-                }
-            } else {
-                $this->addError($attribute, "Class '$class' does not exist or has syntax error.");
-            }
-        } catch (\Exception $e) {
-            $this->addError($attribute, "Class '$class' does not exist or has syntax error.");
-        }
-    }
-
-    /**
-     * An inline validator that checks if the attribute value refers to a valid namespaced class name.
-     * The validator will check if the directory containing the new class file exist or not.
-     * @param string $attribute the attribute being validated
-     * @param array $params the validation options
-     */
-    public function validateNewClass($attribute, $params)
-    {
-        $class = ltrim($this->$attribute, '\\');
-        if (($pos = strrpos($class, '\\')) === false) {
-            $this->addError($attribute, "The class name must contain fully qualified namespace name.");
-        }
-    }
-
-    /**
-     * Checks if message category is not empty when I18N is enabled.
-     */
-    public function validateMessageCategory()
-    {
-        if ($this->enableI18N && empty($this->messageCategory)) {
-            $this->addError('messageCategory', "Message Category cannot be blank.");
-        }
-    }
 
     /**
      * @param string $value the attribute to be validated

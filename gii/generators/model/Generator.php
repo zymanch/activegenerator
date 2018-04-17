@@ -51,22 +51,6 @@ class Generator extends \ActiveGenerator\gii\Generator
         return 'This generator generates an ActiveRecord class for the specified database table.';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return array_merge(parent::rules(), [
-            [['ns', 'baseClass', 'queryBaseClass'], 'filter', 'filter' => 'trim'],
-            [['ns'], 'filter', 'filter' => function ($value) { return trim($value, '\\'); }],
-
-            [['ns', 'sub','baseClass', 'queryBaseClass','path','mainPath'], 'required'],
-            [['ns', 'baseClass', 'queryBaseClass'], 'match', 'pattern' => '/^[\w\\\\]+$/', 'message' => 'Only word characters and backslashes are allowed.'],
-            [['generateLabelsFromComments'], 'boolean'],
-            [['enableI18N'], 'boolean'],
-            [['messageCategory'], 'validateMessageCategory', 'skipOnEmpty' => false],
-        ]);
-    }
 
 
     public function generate()
