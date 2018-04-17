@@ -32,7 +32,7 @@ class Generator {
         }
         $namespace = trim($this->namespace,'\\');
         $absolutePath = rtrim($absolutePath,'/');
-        @exec('rm -fR ' . $absolutePath . '/Base');
+        @exec('rm -fR ' . $absolutePath . '/'.$this->sub);
         $generator = $this->_getGenerator($namespace, $absolutePath);
         $files = $generator->generate();
         /** @var \ActiveGenerator\gii\CodeFile $file */
@@ -77,7 +77,7 @@ class Generator {
 
     protected function _getOriginFile($namespace, $class, $extends) {
         return '<?'."php\n\nnamespace $namespace;\n\n".
-            "class $class extends \\$namespace\\Base\\$extends {\n\n}";
+            "class $class extends \\$namespace\\{$this->sub}\\$extends {\n\n}";
     }
 
 }
