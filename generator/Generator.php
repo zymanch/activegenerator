@@ -15,6 +15,7 @@ class Generator {
     public $namespace = 'Model';
     public $prefix = 'C';
     public $path = '';
+    public $sub = 'Base';
 
     public function __construct(\PDO $db) {
         $this->_db = $db;
@@ -57,7 +58,7 @@ class Generator {
         $generator->setDbConnection($this->_db);
         $generator->ns = $namespace;
         $generator->path = $path;
-        $generator->sub  = 'Base';
+        $generator->sub  = $this->sub;
         $generator->prefix  = $this->prefix;
         $generator->baseClass = $this->baseClass;
         $generator->queryBaseClass = $this->queryBaseClass;

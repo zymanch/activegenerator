@@ -9,6 +9,7 @@ class ScriptHelper {
     public $namespace = 'Model';
     public $path = '';
     public $prefix = 'Base';
+    public $sub = 'Base';
 
     /**
      * @param string $tables Example: shared:website,rest_query,script_log;geoip:geo_zone
@@ -21,6 +22,7 @@ class ScriptHelper {
         $generator->namespace = $this->namespace;
         $generator->path = $this->path;
         $generator->prefix = $this->prefix;
+        $generator->sub = $this->sub;
         foreach ($tables as $databaseAndTables) {
             $databaseAndTables = explode(':',$databaseAndTables,2);
             $database = $databaseAndTables[0];
