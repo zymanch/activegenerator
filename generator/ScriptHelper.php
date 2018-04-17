@@ -8,6 +8,7 @@ class ScriptHelper {
     public $queryBaseClass = 'ActiveRecord\db\ActiveQuery';
     public $namespace = 'Model';
     public $path = '';
+    public $prefix = 'Base';
 
     /**
      * @param string $tables Example: shared:website,rest_query,script_log;geoip:geo_zone
@@ -19,6 +20,7 @@ class ScriptHelper {
         $generator->queryBaseClass = $this->queryBaseClass;
         $generator->namespace = $this->namespace;
         $generator->path = $this->path;
+        $generator->prefix = $this->prefix;
         foreach ($tables as $databaseAndTables) {
             $databaseAndTables = explode(':',$databaseAndTables,2);
             $database = $databaseAndTables[0];
