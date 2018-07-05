@@ -268,8 +268,8 @@ class Generator extends \ActiveGenerator\gii\Generator
                 continue;
             }
 
-            $link = $this->generateRelationLink(array_flip($secondKey), $peerName, $peerName0);
-            $viaLink = $this->generateRelationLink($firstKey, $peerName1, $peerName);
+            $link = $this->generateRelationLink(array_flip($secondKey), $peerName1, $peerName);
+            $viaLink = $this->generateRelationLink($firstKey, $peerName, $peerName0);
             $relationName = $this->generateRelationName($relations, $table0Schema, key($secondKey), true);
             $relations[$table0Schema->fullName][$relationName] = [
                 "return \$this->hasMany($className1::className(), $link)->viaTable('"
@@ -278,8 +278,8 @@ class Generator extends \ActiveGenerator\gii\Generator
                 true,
             ];
 
-            $link = $this->generateRelationLink(array_flip($firstKey),$peerName,$peerName1);
-            $viaLink = $this->generateRelationLink($secondKey, $peerName0, $peerName);
+            $link = $this->generateRelationLink(array_flip($firstKey),$peerName0,$peerName);
+            $viaLink = $this->generateRelationLink($secondKey, $peerName, $peerName1);
             $relationName = $this->generateRelationName($relations, $table1Schema, key($firstKey), true);
             $relations[$table1Schema->fullName][$relationName] = [
                 "return \$this->hasMany($className0::className(), $link)->viaTable('"
