@@ -69,7 +69,7 @@ trait Filterable {
     private function _applyFlexibleQuery($name, $params) {
         $parts = explode('\\',$this->modelClass);
         $class = array_pop($parts);
-        $parts[] = 'filter';
+        $parts[] = 'Filter';
         $parts[] = $class;
         $parts[] = $name;
         $filterClass = implode('\\', $parts);
