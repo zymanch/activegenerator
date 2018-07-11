@@ -12,10 +12,10 @@ trait RichActiveMethods {
 
     public function __call($name, $params) {
         if (substr($name,0,8)==='filterBy') {
-            if ($this->_applySpecification(substr($name, 8), $params)) {
-                return $this;
-            }
             return $this->_filterBy(substr($name, 8), $params);
+        }
+        if (substr($name,0,8)==='specify') {
+            return $this->_specify(substr($name, 7), $params);
         }
         if (substr($name,0,7)==='orderBy') {
             return $this->_orderBy(substr($name, 7), $params);
@@ -66,7 +66,7 @@ trait RichActiveMethods {
         );
     }
 
-    private function _applySpecification($name, $params) {
+    private function _specify($name, $params) {
         $parts = explode('\\',$this->modelClass);
         $class = array_pop($parts);
         $parts[] = 'Specification';
@@ -74,7 +74,7 @@ trait RichActiveMethods {
         $parts[] = $name;
         $filterClass = implode('\\', $parts);
         if (!class_exists($filterClass)) {
-            return false;
+            throw new \Exception('Specification class '.$filterClass.' not found');
         }
         /** @var Specification $filter */
         $filter = new $filterClass();
@@ -82,7 +82,7 @@ trait RichActiveMethods {
             throw new \Exception($filterClass.' must be instance of FilterQuery');
         }
         $filter->specify($this, $params);
-        return true;
+        return $this;
     }
 
     public function filterByField($field, $value, $criteria = null)  {
