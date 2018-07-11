@@ -138,4 +138,36 @@ trait RichActiveMethods {
         }
         return $this;
     }
+
+
+    /**
+     * Returns the table name and the table alias for [[modelClass]].
+     * @return array the table name and the table alias.
+     * @internal
+     */
+    private function getTableNameAndAlias()
+    {
+        if (empty($this->from)) {
+            /* @var $modelClass ActiveRecord */
+            $modelClass = $this->modelClass;
+            $tableName = $modelClass::tableName();
+        } else {
+            $tableName = '';
+            foreach ($this->from as $alias => $tableName) {
+                if (is_string($alias)) {
+                    return [$tableName, $alias];
+                } else {
+                    break;
+                }
+            }
+        }
+
+        if (preg_match('/^(.*?)\s+({{\w+}}|\w+)$/', $tableName, $matches)) {
+            $alias = $matches[2];
+        } else {
+            $alias = $tableName;
+        }
+
+        return [$tableName, $alias];
+    }
 }
