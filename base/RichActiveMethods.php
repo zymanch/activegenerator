@@ -11,19 +11,19 @@ use ActiveRecord\Criteria;
 trait RichActiveMethods {
 
     public function __call($name, $params) {
-        if (substr($name,0,8)==='filterBy') {
+        if (strpos($name,'filterBy')===0) {
             return $this->_filterBy(substr($name, 8), $params);
         }
-        if (substr($name,0,8)==='specify') {
+        if (strpos($name, 'specify')===0) {
             return $this->_specify(substr($name, 7), $params);
         }
-        if (substr($name,0,7)==='orderBy') {
+        if (strpos($name,'orderBy')===0) {
             return $this->_orderBy(substr($name, 7), $params);
         }
-        if (substr($name,0,4)==='with') {
+        if (strpos($name,'with')===0) {
             return $this->_with(substr($name, 4), $params);
         }
-        if (substr($name,0,8)==='joinWith') {
+        if (strpos($name,'joinWith')===0) {
             return $this->_joinWith(substr($name, 8), $params);
         }
         return parent::__call($name, $params);
