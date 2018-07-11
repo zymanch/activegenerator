@@ -36,10 +36,9 @@ use <?= $ns.'\\'.$mainQueryClassName;?>;
  */
 class <?= $queryClassName ?> extends <?= '\\' . ltrim($generator->queryBaseClass, '\\') . "\n" ?>
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
+
+
+    use \ActiveGenerator\base\Filterable;
 
     /**
      * @inheritdoc
