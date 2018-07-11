@@ -38,7 +38,7 @@ class <?= $queryClassName ?> extends <?= '\\' . ltrim($generator->queryBaseClass
 {
 
 
-    use \ActiveGenerator\base\Filterable;
+    use \ActiveGenerator\base\RichActiveMethods;
 
     /**
      * @inheritdoc

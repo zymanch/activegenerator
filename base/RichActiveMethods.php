@@ -8,11 +8,11 @@ use ActiveRecord\Criteria;
  * Date: 11.07.2018
  * Time: 10:06
  */
-trait Filterable {
+trait RichActiveMethods {
 
     public function __call($name, $params) {
         if (substr($name,0,8)==='filterBy') {
-            if ($this->_applyFlexibleQuery(substr($name, 8), $params)) {
+            if ($this->_applySpecification(substr($name, 8), $params)) {
                 return $this;
             }
             return $this->_filterBy(substr($name, 8), $params);
@@ -66,22 +66,22 @@ trait Filterable {
         );
     }
 
-    private function _applyFlexibleQuery($name, $params) {
+    private function _applySpecification($name, $params) {
         $parts = explode('\\',$this->modelClass);
         $class = array_pop($parts);
-        $parts[] = 'Filter';
+        $parts[] = 'Specification';
         $parts[] = $class;
         $parts[] = $name;
         $filterClass = implode('\\', $parts);
         if (!class_exists($filterClass)) {
             return false;
         }
-        /** @var FilterQuery $filter */
+        /** @var Specification $filter */
         $filter = new $filterClass();
-        if (!($filter instanceof FilterQuery)) {
+        if (!($filter instanceof Specification)) {
             throw new \Exception($filterClass.' must be instance of FilterQuery');
         }
-        $filter->filter($this, $params);
+        $filter->specify($this, $params);
         return true;
     }
 

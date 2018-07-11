@@ -28,8 +28,8 @@ namespace ActiveGenerator\base;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0.3
  */
-interface FilterQuery {
+interface Specification {
 
 
-    public function filter($query, $params = []);
+    public function specify($query, $params = []);
 }
