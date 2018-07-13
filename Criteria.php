@@ -5,7 +5,7 @@
  * Date: 25.04.2017
  * Time: 17:44
  */
-namespace ActiveRecord;
+namespace ActiveGenerator;
 
 class Criteria {
 

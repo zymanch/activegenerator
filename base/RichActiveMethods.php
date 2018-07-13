@@ -1,6 +1,6 @@
 <?php
 namespace ActiveGenerator\base;
-use ActiveRecord\Criteria;
+use ActiveGenerator\Criteria;
 
 /**
  * Created by PhpStorm.
