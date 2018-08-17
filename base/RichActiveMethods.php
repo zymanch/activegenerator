@@ -10,6 +10,8 @@ use ActiveGenerator\Criteria;
  */
 trait RichActiveMethods {
 
+    protected $_forUpdate = false;
+
     public function __call($name, $params) {
         if (strpos($name,'filterBy')===0) {
             return $this->_filterBy(substr($name, 8), $params);
@@ -169,5 +171,36 @@ trait RichActiveMethods {
         }
 
         return [$tableName, $alias];
+    }
+
+    /**
+     * @param $bool
+     * @return $this
+     */
+    public function forUpdate($bool = true)
+    {
+        $this->_forUpdate = $bool;
+        return $this;
+    }
+
+    public function createCommand($db = null)
+    {
+        list ($sql, $params) = self::getDb()->getQueryBuilder()->build($this);
+        $this->_injectForUpdate($sql);
+        return self::getDb()->createCommand($sql, $params);
+    }
+
+    protected function _injectForUpdate(&$sql)
+    {
+        if (!$this->_forUpdate) {
+            return;
+        }
+        if (stripos($sql,'select ')!==0) {
+            return;
+        }
+        if ($this->join) {
+            throw new \Exception('Select for update available only without join');
+        }
+        $sql.= ' for update';
     }
 }
