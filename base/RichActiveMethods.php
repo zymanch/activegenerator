@@ -185,9 +185,9 @@ trait RichActiveMethods {
 
     public function createCommand($db = null)
     {
-        list ($sql, $params) = self::getDb()->getQueryBuilder()->build($this);
+        list ($sql, $params) = $this->_getDb($db)->getQueryBuilder()->build($this);
         $this->_injectForUpdate($sql);
-        return self::getDb()->createCommand($sql, $params);
+        return $this->_getDb($db)->createCommand($sql, $params);
     }
 
     protected function _injectForUpdate(&$sql)
@@ -202,5 +202,13 @@ trait RichActiveMethods {
             throw new \Exception('Select for update available only without join');
         }
         $sql.= ' for update';
+    }
+
+    private function _getDb($db) {
+        if ($db) {
+            return $db;
+        }
+        $modelClass = $this->modelClass;
+        return $modelClass::getDb();
     }
 }
