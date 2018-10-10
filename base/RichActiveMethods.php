@@ -51,7 +51,7 @@ trait RichActiveMethods {
 
     private function _with($name, $params) {
         $fieldName = lcfirst($name);
-        return $this->with([$fieldName => isset($params[0]) ? $params[0] : []]);
+        return $this->with([$fieldName => isset($params[0]) ? $params[0] : null]);
     }
 
     private function _joinWith($name, $params) {
