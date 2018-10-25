@@ -1,5 +1,5 @@
 {
-    "name": "zymanch/active-generator",
+    "name": "zymanch/activegenerator",
     "description": "Yii 2 active generator",
     "type": "project",
     "minimum-stability": "dev",
