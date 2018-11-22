@@ -256,8 +256,12 @@ class Generator extends \ActiveGenerator\gii\Generator
             $table0 = $firstKey[0];
             $table1 = $secondKey[0];
             unset($firstKey[0], $secondKey[0]);
-            $className0 = $this->generateClassName($table0);
-            $className1 = $this->generateClassName($table1);
+            try {
+                $className0 = $this->generateClassName($table0);
+                $className1 = $this->generateClassName($table1);
+            } catch (\Exception $e) {
+                continue;
+            }
             $peerName0 = $this->generatePeerClassName($table0);
             $peerName1 = $this->generatePeerClassName($table1);
             $table0Schema = $schema->getTableSchema($table0);
