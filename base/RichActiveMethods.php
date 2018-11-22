@@ -44,8 +44,18 @@ trait RichActiveMethods {
     private function _orderBy($name, $params) {
         $fieldName = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
         list(,$alias) = $this->getTableNameAndAlias();
+        $order = SORT_ASC;
+        if ($params) {
+            $order = $params[0];
+        }
+        if ($order === 'DESC') {
+            $order = SORT_DESC;
+        }
+        if ($order === 'ASC') {
+            $order = SORT_ASC;
+        }
         return $this->addOrderBy([
-             $alias.'.'.$fieldName => ($params?$params[0]:SORT_ASC)
+             $alias.'.'.$fieldName => $order
         ]);
     }
 
