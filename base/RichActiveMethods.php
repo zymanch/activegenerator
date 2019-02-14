@@ -33,7 +33,7 @@ trait RichActiveMethods {
 
     private function _filterBy($name, $params) {
         $fieldName = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
-        list(,$alias) = $this->getTableNameAndAlias();
+        list(,$alias) = $this->_getTableNameAndAlias();
         return $this->filterByField(
             $alias.'.'.$fieldName,
             $params[0],
@@ -43,7 +43,7 @@ trait RichActiveMethods {
 
     private function _orderBy($name, $params) {
         $fieldName = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
-        list(,$alias) = $this->getTableNameAndAlias();
+        list(,$alias) = $this->_getTableNameAndAlias();
         $order = SORT_ASC;
         if ($params) {
             $order = $params[0];
@@ -157,7 +157,7 @@ trait RichActiveMethods {
      * @return array the table name and the table alias.
      * @internal
      */
-    private function getTableNameAndAlias()
+    private function _getTableNameAndAlias()
     {
         if (empty($this->from)) {
             /* @var $modelClass ActiveRecord */
