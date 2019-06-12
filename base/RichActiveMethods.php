@@ -110,7 +110,11 @@ trait RichActiveMethods {
                 $this->andWhere(['IN',$field, $value]);
                 break;
             case Criteria::EQUAL:
-                $this->andWhere(['=',$field, $value]);
+                if ($value === null) {
+                    $this->andWhere($field.' is null');
+                } else {
+                    $this->andWhere(['=', $field, $value]);
+                }
                 break;
             case Criteria::GREATER_THAN:
                 $this->andWhere(['>',$field, $value]);
