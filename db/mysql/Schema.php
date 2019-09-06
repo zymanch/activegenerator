@@ -19,6 +19,18 @@ use ActiveGenerator\db\ColumnSchema;
  */
 class Schema extends \ActiveGenerator\db\Schema
 {
+
+    const WRONG_COLUMN = [
+        '__halt_compiler', 'abstract', 'and', 'array', 'as', 'break', 'callable', 'case',
+        'catch', 'class', 'clone', 'const', 'continue', 'declare', 'default', 'die', 'do',
+        'echo', 'else', 'elseif', 'empty', 'enddeclare', 'endfor', 'endforeach', 'endif',
+        'endswitch', 'endwhile', 'eval', 'exit', 'extends', 'final', 'for', 'foreach',
+        'function', 'global', 'goto', 'if', 'implements', 'include', 'include_once',
+        'instanceof', 'insteadof', 'interface', 'isset', 'list', 'namespace', 'new',
+        'or', 'print', 'private', 'protected', 'public', 'require', 'require_once',
+        'return', 'static', 'switch', 'throw', 'trait', 'try', 'unset', 'use', 'var',
+        'while', 'xor'
+    ];
     /**
      * @var array mapping from physical column types (keys) to abstract column types (values)
      */
@@ -205,6 +217,10 @@ class Schema extends \ActiveGenerator\db\Schema
                 $info = array_change_key_case($info, CASE_LOWER);
             }
             $column = $this->loadColumnSchema($info);
+
+            if (in_array(strtolower($column), self::WRONG_COLUMN)) {
+                continue;
+            }
             $table->columns[$column->name] = $column;
             if ($column->isPrimaryKey) {
                 $table->primaryKey[] = $column->name;
